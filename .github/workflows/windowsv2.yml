@@ -95,7 +95,7 @@ jobs:
       - name: 🎬 Install Subtitle Edit
         run: |
           Write-Host "Downloading and installing Subtitle Edit..."
-          $url = "https://github.com/SubtitleEdit/subtitleedit/releases/download/4.0.13/SubtitleEdit-4.0.14-Setup.exe"
+          $url = "https://github.com/SubtitleEdit/subtitleedit/releases/download/4.0.14/SubtitleEdit-4.0.14-Setup.exe"
           $installer = "$env:TEMP\SubtitleEdit-Setup.exe"
           Invoke-WebRequest -Uri $url -OutFile $installer -UseBasicParsing
           Write-Host "Running installer silently..."
