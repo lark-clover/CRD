@@ -95,60 +95,12 @@ jobs:
       - name: 🎬 Install Subtitle Edit
         run: |
           Write-Host "Downloading and installing Subtitle Edit..."
-          $url = "https://github.com/SubtitleEdit/subtitleedit/releases/download/4.0.14/SubtitleEdit-4.0.14-Setup.exe"
+          $url = "https://github.com/SubtitleEdit/subtitleedit/releases/download/4.0.13/SubtitleEdit-4.0.14-Setup.exe"
           $installer = "$env:TEMP\SubtitleEdit-Setup.exe"
           Invoke-WebRequest -Uri $url -OutFile $installer -UseBasicParsing
           Write-Host "Running installer silently..."
           Start-Process -FilePath $installer -ArgumentList "/VERYSILENT /NORESTART /SP-" -Wait
           Write-Host "Subtitle Edit installed successfully."
-
-      - name: 📥 Download Password CSV (pass.csv)
-        run: |
-          Write-Host "Downloading pass.csv to Downloads folder..."
-          $downloadFolder = "$env:USERPROFILE\Downloads"
-          if (!(Test-Path $downloadFolder)) {
-            New-Item -ItemType Directory -Path $downloadFolder | Out-Null
-          }
-
-          $url = "https://drive.google.com/uc?export=download&id=1DigM_oDo5EZl9yDJzVqiefyOulHr-LMt"
-          $output = "$downloadFolder\pass.csv"
-          Invoke-WebRequest -Uri $url -OutFile $output -UseBasicParsing
-          Write-Host "✅ File saved: $output"
-
-          $size = (Get-Item $output).Length
-          Write-Host "File size: $size bytes"
-
-      - name: 📥 Download auto-send-email.zip (auto-send-email.zip)
-        run: |
-          Write-Host "Downloading auto-send-email.zip to Downloads folder..."
-          $downloadFolder = "$env:USERPROFILE\Downloads"
-          if (!(Test-Path $downloadFolder)) {
-            New-Item -ItemType Directory -Path $downloadFolder | Out-Null
-          }
-
-          $url = "https://github.com/Thorns2007/AUTOSENDEMAIL/releases/download/V1.0.0/auto-send-email.zip"
-          $output = "$downloadFolder\auto-send-email.zip"
-          Invoke-WebRequest -Uri $url -OutFile $output -UseBasicParsing
-          Write-Host "✅ File saved: $output"
-
-          $size = (Get-Item $output).Length
-          Write-Host "File size: $size bytes"
-
-      - name: 📥 Download setup-wdown.zip (setup-wdown.zip)
-        run: |
-          Write-Host "Downloading setup-wdown.zip to Downloads folder..."
-          $downloadFolder = "$env:USERPROFILE\Downloads"
-          if (!(Test-Path $downloadFolder)) {
-            New-Item -ItemType Directory -Path $downloadFolder | Out-Null
-          }
-
-          $url = "https://github.com/Thorns2007/SETUP-WDOWN/releases/download/V1.0.0/setup-wdown.zip"
-          $output = "$downloadFolder\setup-wdown.zip"
-          Invoke-WebRequest -Uri $url -OutFile $output -UseBasicParsing
-          Write-Host "✅ File saved: $output"
-
-          $size = (Get-Item $output).Length
-          Write-Host "File size: $size bytes"
 
       - name: ⏳ Keep alive
         run: |
