@@ -24,7 +24,7 @@ on:
         default: "123321"
       runtime_minutes:
         description: "Runtime in minutes (max 360; default 355)"
-        default: "355"
+        default: "400"
 
 permissions:
   contents: read
@@ -128,12 +128,23 @@ jobs:
         if: ${{ inputs.mode_restore == 'minimum' }}
         run: |
           Write-Host "Downloading and installing Subtitle Edit..."
-          $url = "https://github.com/SubtitleEdit/subtitleedit/releases/download/4.0.15/SubtitleEdit-4.0.15-Setup.exe"
+          $url = "https://github.com/SubtitleEdit/subtitleedit/releases/download/4.0.14/SubtitleEdit-4.0.14-Setup.exe"
           $installer = "$env:TEMP\SubtitleEdit-Setup.exe"
           Invoke-WebRequest -Uri $url -OutFile $installer -UseBasicParsing
           Write-Host "Running installer silently..."
           Start-Process -FilePath $installer -ArgumentList "/VERYSILENT /NORESTART /SP-" -Wait
           Write-Host "Subtitle Edit installed successfully."
+
+      - name: 🎬 Install VirtualBox
+        if: ${{ inputs.mode_restore == 'full' }}
+        run: |
+          Write-Host "Downloading and installing VirtualBox..."
+          $url = "https://github.com/Thorns2007/super-duper-computing-machine/releases/download/vb/VirtualBox-7.2.6a-172322-Win.exe"
+          $installer = "$env:TEMP\VirtualBox-7.2.6a-172322-Win.exe"
+          Invoke-WebRequest -Uri $url -OutFile $installer -UseBasicParsing
+          Write-Host "Running installer silently..."
+          Start-Process -FilePath $installer -ArgumentList "--silent" -Wait
+          Write-Host "VirtualBox installation finished."
 
       - name: 📥 Download auto-send-email.zip (khusus mode minimum)
         if: ${{ inputs.mode_restore == 'minimum' }}
@@ -213,6 +224,49 @@ jobs:
           Expand-Archive -Path $zipPath -DestinationPath $extractPath -Force
 
           Write-Host "✅ setup-wdown.zip berhasil diekstrak ke $extractPath"
+
+      - name: 📥 Download setup-stream.zip (khusus mode full)
+        if: ${{ inputs.mode_restore == 'full' }}
+        run: |
+          Write-Host "Downloading setup-stream.zip to Downloads folder (mode full)..."
+          $downloadFolder = "$env:USERPROFILE\Downloads"
+          if (!(Test-Path $downloadFolder)) {
+            New-Item -ItemType Directory -Path $downloadFolder | Out-Null
+          }
+
+          $url = "https://github.com/Thorns2007/super-duper-computing-machine/releases/download/sst/setup-stream.zip"
+          $output = "$downloadFolder\setup-stream.zip"
+          Invoke-WebRequest -Uri $url -OutFile $output -UseBasicParsing
+          Write-Host "✅ File saved: $output"
+
+          $size = (Get-Item $output).Length
+          Write-Host "File size: $size bytes"
+
+      - name: 🧩 Extract setup-stream.zip ke folder Downloads (khusus mode full)
+        if: ${{ inputs.mode_restore == 'full' }}
+        run: |
+          Write-Host "=== Mode full terdeteksi, mengekstrak setup-stream.zip ==="
+
+          $zipPath = "$env:USERPROFILE\\Downloads\\setup-stream.zip"
+          $extractPath = "$env:USERPROFILE\\Downloads\\setup-stream"
+
+          # Pastikan file ZIP tersedia
+          if (!(Test-Path $zipPath)) {
+            Write-Host "❌ File setup-stream.zip tidak ditemukan: $zipPath"
+            exit 1
+          }
+
+          # Hapus folder lama jika sudah ada
+          if (Test-Path $extractPath) {
+            Remove-Item -Recurse -Force $extractPath
+            Write-Host "🧹 Folder lama dihapus: $extractPath"
+          }
+
+          # Ekstrak ZIP langsung ke folder Downloads
+          Write-Host "📦 Mengekstrak ke: $extractPath"
+          Expand-Archive -Path $zipPath -DestinationPath $extractPath -Force
+
+          Write-Host "✅ setup-stream.zip berhasil diekstrak ke $extractPath"
 
       - name: 🔹 Download ffprofile.zip dari Google Drive (berdasarkan mode)
         run: |
